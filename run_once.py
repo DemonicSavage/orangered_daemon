@@ -1,11 +1,12 @@
 import praw, os
 from prawoauth2 import PrawOAuth2Server
+from secrets import app_key, secret_key
 
-user_agent = 'Python:Orangered Daemon:0.3 (by /u/TWILIGHT_IS_AWESOME)'
+user_agent = 'Python:Orangered Daemon:0.0.4 (by /u/TWILIGHT_IS_AWESOME)'
 
 r = praw.Reddit(user_agent=user_agent)
 
-oauthserver = PrawOAuth2Server(r, 'Pm001ivqao366g', '', state=user_agent, scopes=['read', 'privatemessages'])
+oauthserver = PrawOAuth2Server(r, app_key=app_key, app_secret=secret_key, state=user_agent, scopes=['read', 'privatemessages'])
 oauthserver.start()
 tokens = oauthserver.get_access_codes()
 

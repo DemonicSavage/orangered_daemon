@@ -3,17 +3,15 @@ import os, time, praw, gi
 from prawoauth2 import PrawOAuth2Mini
 gi.require_version('Notify', '0.7')
 from gi.repository import Notify
+from secrets import app_key, secret_key, refresh_token, access_token
 
-user_agent = 'Python:Orangered Daemon:0.3 (by /u/TWILIGHT_IS_AWESOME)'
+user_agent = 'Python:Orangered Daemon:0.0.4 (by /u/TWILIGHT_IS_AWESOME)'
 
 r = praw.Reddit(user_agent=user_agent)
 
-access_token = os.getenv('OR_DAEMON_ACCESS')
-refresh_token = os.getenv('OR_DAEMON_REFRESH')
+oauthmini = PrawOAuth2Mini(r, app_key=app_key, app_secret=secret_key, access_token=access_token, scopes=['read', 'privatemessages'], refresh_token=refresh_token)
 
-oauthmini = PrawOAuth2Mini(r, 'Pm001ivqao366g', '', access_token=access_token, scopes=['read', 'privatemessages'], refresh_token=refresh_token)
-
-Notify.init("Reddit Inbox Checker 0.1")
+Notify.init("Orangered Daemon 0.0.4")
 
 while True:
 	try:
@@ -25,4 +23,3 @@ while True:
 		time.sleep(30)
 	except praw.errors.OAuthInvalidToken:
 		oauthmini.refresh()
-

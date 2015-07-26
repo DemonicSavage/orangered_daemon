@@ -1,20 +1,26 @@
-import praw, os
+import praw, os, configparser, warnings
 from prawoauth2 import PrawOAuth2Server
-from secrets import app_key, secret_key
 
-user_agent = 'Python:Orangered Daemon:0.0.4 (by /u/TWILIGHT_IS_AWESOME)'
+warnings.filterwarnings('ignore')
+config = configparser.ConfigParser()
 
-r = praw.Reddit(user_agent=user_agent)
+if not os.path.isfile('orangered.cfg'):
+	config['APP'] = {'KEY': '', 'SECRET': ''}
+	config['TOKENS'] = {'ACCESS': '', 'REFRESH': ''}
 
-oauthserver = PrawOAuth2Server(r, app_key=app_key, app_secret=secret_key, state=user_agent, scopes=['read', 'privatemessages'])
-oauthserver.start()
-tokens = oauthserver.get_access_codes()
+	print('Config file created. Set your app key and secret and re-run this file.')
+else:
+	user_agent = 'Python:Orangered Daemon:0.0.4 (by /u/TWILIGHT_IS_AWESOME)'
 
-if os.environ.get('OR_DAEMON_ACCESS') == None or os.environ.get('OR_DAEMON_REFRESH') == None:
-	with open("~/.bashrc", "a") as env_file:
-		env_file.write("export OR_DAEMON_ACCESS =" + tokens['access_token'])
-		env_file.write("export OR_DAEMON_REFRESH =" + tokens['refresh_token'])
-		env_file.close()
+	config.read('orangered.cfg')
+	r = praw.Reddit(user_agent=user_agent)
 
-os.environ['OR_DAEMON_ACCESS'] = tokens['access_token']
-os_environ['OR_DAEMON_REFRESH'] = tokens['refresh_token']
+	oauthserver = PrawOAuth2Server(r, app_key=config['APP']['KEY'], app_secret=config['APP']['SECRET'], state=user_agent, scopes=['read', 'privatemessages'])
+	oauthserver.start()
+	tokens = oauthserver.get_access_codes()
+
+	config['TOKENS']['ACCESS'] = tokens['access_token']
+	config['TOKENS']['REFRESH'] = tokens['refresh_token']
+
+with open('orangered.cfg', 'w') as configfile:
+	config.write(configfile)
